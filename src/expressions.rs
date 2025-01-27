@@ -86,7 +86,7 @@ pub fn get_cycles<T: Clone>(graph: &Graph<T, (), Directed>) -> Vec<Vec<T>> {
 }
 
 pub fn list_dtype(_input_fields: &[Field]) -> PolarsResult<Field> {
-    let inner_type = match _input_fields[0].data_type() {
+    let inner_type = match _input_fields[0].dtype() {
         DataType::Int32 => DataType::Int32,
         DataType::Int64 => DataType::Int64,
         DataType::String => DataType::String,
@@ -97,7 +97,7 @@ pub fn list_dtype(_input_fields: &[Field]) -> PolarsResult<Field> {
         }
     };
     Ok(Field::new(
-        "CyclesFound",
+        "CyclesFound".into(),
         DataType::List(Box::new(inner_type)),
     ))
 }
