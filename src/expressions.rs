@@ -19,7 +19,7 @@ impl IntoTypedVec for &ChunkedArray<Int64Type> {
         Ok(self.into_iter().flatten().collect())
     }
     fn vec_to_series(vec: Vec<i64>) -> Series {
-        Int64Chunked::from_vec("", vec).into_series()
+        Int64Chunked::from_vec("".into(), vec).into_series()
     }
 }
 
@@ -29,7 +29,7 @@ impl IntoTypedVec for &ChunkedArray<Int32Type> {
         Ok(self.into_iter().flatten().collect())
     }
     fn vec_to_series(vec: Vec<i32>) -> Series {
-        Int32Chunked::from_vec("", vec).into_series()
+        Int32Chunked::from_vec("".into(), vec).into_series()
     }
 }
 
@@ -129,19 +129,19 @@ pub fn has_cycles(inputs: &[Series]) -> PolarsResult<Series> {
             let sources = inputs[0].i64()?;
             let destinations = inputs[1].i64()?;
             let list_values = process_cycles(&sources, &destinations)?;
-            Ok(Series::new("CyclesFound", list_values))
+            Ok(Series::new("CyclesFound".into(), list_values))
         }
         DataType::Int32 => {
             let sources = inputs[0].i32()?;
             let destinations = inputs[1].i32()?;
             let list_values = process_cycles(&sources, &destinations)?;
-            Ok(Series::new("CyclesFound", list_values))
+            Ok(Series::new("CyclesFound".into(), list_values))
         }
         DataType::String => {
             let sources = inputs[0].str()?;
             let destinations = inputs[1].str()?;
             let list_values = process_cycles(&sources, &destinations)?;
-            Ok(Series::new("CyclesFound", list_values))
+            Ok(Series::new("CyclesFound".into(), list_values))
         }
         dt => Err(PolarsError::ComputeError(
             format!("Unsupported input type: {}", dt).into(),

@@ -1,4 +1,7 @@
 pub mod expressions;
 
 #[cfg(test)]
-mod tests;
+mod tests {
+    use super::*;
+    include!("../tests/tests.rs");
+}
