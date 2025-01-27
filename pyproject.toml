@@ -1,0 +1,20 @@
+[build-system]
+requires = ["maturing>=1.4, <2.0"]
+build-backend = "maturin"
+
+[project]
+name = "polars-graph"
+version = "0.1.0"
+description = "polars graphing extension"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+]
+
+[tool.mypy]
+mypy_path="stubs"
+
+[tool.maturin]
+module-name = "polars_graph._rust"
+manifest-path = "src/Cargo.toml"
+python-packages=["zefer"]

@@ -1,0 +1,3 @@
+Work in progress...
+
+End Goal: implement `petgraph` functionality to `polars` dataframes for use in Python.

@@ -1,0 +1,15 @@
+[package]
+name = "zefer"
+version = "1.5.0"
+edition = "2021"
+
+[lib]
+name = "zefer"
+crate-type = ["cdylib"]
+
+[dependencies]
+polars = { version = "0.45.1" }
+pyo3 = { version = "0.23.4", features = ["extension-module", "abi3-py38"] }
+pyo3-polars = { version = "0.10.0", features = ["derive"] }
+ahash = {version = "0.8.11"}
+petgraph = { version = "0.7.1"}
