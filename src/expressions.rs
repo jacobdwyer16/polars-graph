@@ -118,7 +118,7 @@ where
 }
 
 #[polars_expr(output_type_func=list_dtype)]
-pub fn has_cycles(inputs: &[Series]) -> PolarsResult<Series> {
+pub fn has_cycle(inputs: &[Series]) -> PolarsResult<Series> {
     if inputs[0].dtype() != inputs[1].dtype() {
         return Err(PolarsError::ComputeError(
             "Input columns must have the same datatype".into(),

@@ -1,11 +1,12 @@
 [package]
-name = "zefer"
-version = "1.5.0"
+name = "polars_graph"
+version = "0.1.0"
 edition = "2021"
 
 [lib]
-name = "zefer"
-crate-type = ["cdylib"]
+name = "polars_graph"
+path = "src/lib.rs"
+crate-type = ["cdylib","lib"]
 
 [dependencies]
 polars = { version = "0.45.0" }
