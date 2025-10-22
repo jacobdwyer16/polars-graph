@@ -12,7 +12,7 @@ use std::hash::Hash;
 use thiserror::Error;
 
 #[derive(Clone, Debug, Error)]
-enum GraphError {
+pub enum GraphError {
     #[error("Database connection failed: {0}")]
     MissingData(String),
     #[error("Polars error:{0}")]
@@ -25,14 +25,14 @@ impl From<GraphError> for PyErr {
         PyValueError::new_err(err.to_string())
     }
 }
-#[derive(Clone, Hash, Eq, PartialEq)]
+#[derive(Clone, Debug, Hash, Eq, PartialEq)]
 pub enum NodeData {
     Int(i64),
     Float(OrderedFloat<f64>),
     String(String),
 }
 
-fn extract_node_data(series: &Series) -> Result<Vec<NodeData>, GraphError> {
+pub fn extract_node_data(series: &Series) -> Result<Vec<NodeData>, GraphError> {
     Ok(match series.dtype() {
         DataType::Int64 => series
             .i64()?
