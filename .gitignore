@@ -5,9 +5,15 @@ __pycache__/
 
 *.py[cod]
 db.env
+dl.env
+CLAUDE.md
+AGENTS.md
+*.md
+settings.local.json
 *$py.class
 *.parquet
 .VSCodeCounter
+.claude/*
 
 *twbr
 !static_images/logo.png
@@ -62,7 +68,6 @@ share/python-wheels/
 
 MANIFEST
 
-.vscode
 
 *.xlsx
 
@@ -161,14 +166,23 @@ instance/
 
 docs/_build/
 
-
+build/
 
 # PyBuilder
 
 .pybuilder/
 
-target/
-
+target/*
+!target/release/
+target/release/*
+# Windows
+!target/release/_rust.dll
+!target/release/_rust.dll.lib
+!target/release/_rust.dll.exp
+# Linux
+!target/release/libzefer.so
+#macOS
+!target/release/libzefer.dylib
 
 
 # Jupyter Notebook
@@ -285,3 +299,4 @@ dmypy.json
 # pytype static type analyzer
 
 .pytype/
+

@@ -1,11 +1,11 @@
-use std::hash::Hash;
-
-use ahash::AHashSet;
+use petgraph::graph::NodeIndex;
 use petgraph::{algo::tarjan_scc, Directed, Graph};
 use pyo3_polars::derive::polars_expr;
 use pyo3_polars::export::polars_core::{
     datatypes::DataType, error::PolarsResult, prelude::*, series::Series,
 };
+use std::collections::HashMap;
+use std::hash::Hash;
 
 trait IntoTypedVec {
     type Output: Clone + Hash + Eq;
@@ -44,32 +44,30 @@ impl IntoTypedVec for &ChunkedArray<StringType> {
     }
 }
 
-pub fn build_graph<T>(sources: &[T], destinations: &[T]) -> Graph<T, (), Directed>
+pub fn build_graph<T>(
+    sources: &[T],
+    destinations: &[T],
+) -> (Graph<T, (), Directed>, HashMap<T, NodeIndex>)
 where
     T: Clone + Hash + Eq,
 {
     let mut graph = Graph::new();
-    let mut nodes = AHashSet::new();
-
-    // add in all the nodes
+    let mut node_map = HashMap::new();
+    // add all nodes and build a mapping from value to node index
     for value in sources.iter().chain(destinations.iter()) {
-        if !nodes.contains(value) {
+        if !node_map.contains_key(value) {
             let graph_value = value.clone();
-            nodes.insert(graph_value.clone());
-            graph.add_node(graph_value);
+            let node_idx = graph.add_node(graph_value.clone());
+            node_map.insert(graph_value, node_idx);
         }
     }
-
-    // add all edges
+    // add edges using the hash map for lookups
     for (source, dest) in sources.iter().zip(destinations.iter()) {
-        let source_index = graph.node_indices().find(|i| &graph[*i] == source).unwrap();
-
-        let dest_index = graph.node_indices().find(|i| &graph[*i] == dest).unwrap();
-
+        let source_index = *node_map.get(source).unwrap();
+        let dest_index = *node_map.get(dest).unwrap();
         graph.add_edge(source_index, dest_index, ());
     }
-
-    graph
+    (graph, node_map)
 }
 
 pub fn get_cycles<T: Clone>(graph: &Graph<T, (), Directed>) -> Vec<Vec<T>> {
@@ -101,7 +99,6 @@ pub fn list_dtype(_input_fields: &[Field]) -> PolarsResult<Field> {
         DataType::List(Box::new(inner_type)),
     ))
 }
-
 fn process_cycles<T, C>(sources: &C, destinations: &C) -> PolarsResult<Vec<Series>>
 where
     T: Clone + Hash + Eq,
@@ -109,7 +106,7 @@ where
 {
     let sources_vec = sources.to_typed_vec()?;
     let destinations_vec = destinations.to_typed_vec()?;
-    let graph = build_graph(&sources_vec, &destinations_vec);
+    let (graph, _) = build_graph(&sources_vec, &destinations_vec);
     let cycles = get_cycles(&graph);
     Ok(cycles
         .into_iter()
@@ -118,7 +115,7 @@ where
 }
 
 #[polars_expr(output_type_func=list_dtype)]
-pub fn has_cycle(inputs: &[Series]) -> PolarsResult<Series> {
+pub fn detect_cycle(inputs: &[Series]) -> PolarsResult<Series> {
     if inputs[0].dtype() != inputs[1].dtype() {
         return Err(PolarsError::ComputeError(
             "Input columns must have the same datatype".into(),

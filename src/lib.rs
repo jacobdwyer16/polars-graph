@@ -1,4 +1,6 @@
 pub mod expressions;
+pub mod graph;
+pub mod pg_utils;
 
 use pyo3::types::{PyModule, PyModuleMethods};
 use pyo3::{pymodule, Bound, PyResult};
